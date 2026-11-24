@@ -11,6 +11,11 @@ export default function CarrinhoScreen({ navigation, idsCarrinho, onToggleCarrin
   const produtosAdicionados = LISTA_PRODUTOS.filter((produto) =>
     idsCarrinho.includes(produto.id)
   );
+  esvaziarCarrinho = () => {
+    produtosAdicionados.forEach((produto) => {
+      onToggleCarrinho(produto.id);
+    });
+  };
 
   return (
     <View style={styles.tela}>
@@ -90,6 +95,7 @@ export default function CarrinhoScreen({ navigation, idsCarrinho, onToggleCarrin
           if (produtosAdicionados.length > 0) {
             alert('Compra confirmada! Obrigado por comprar conosco.');
           }
+          esvaziarCarrinho();
         }}
       >
         <Text style={styles.textoBotaoConfirmar}>Confirmar Compra</Text>
