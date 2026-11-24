@@ -1,94 +1,99 @@
 // Arquivo: src/screens/MinhasMatriculasScreen.js
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { LISTA_CURSOS } from '../data/cursos';
+import { LISTA_PRODUTOS } from '../data/produtosFallback';
 
 // Tela exibida na segunda aba inferior (Bottom Tab)
-export default function MinhasMatriculasScreen({ navigation, idsMatriculados, onToggleMatricula }) {
-  // Filtra apenas os cursos em que o aluno está matriculado
-  const cursosInscritos = LISTA_CURSOS.filter((curso) =>
-    idsMatriculados.includes(curso.id)
-  );
-
-  // Soma a carga horária total dos cursos matriculados
-  const totalHoras = cursosInscritos.reduce(
-    (acumulador, curso) => acumulador + curso.horasNumericas,
-    0
+export default function CarrinhoScreen({ navigation, idsCarrinho, onToggleCarrinho }) {
+  // Filtra apenas os produtos em que o aluno está matriculado
+  const produtosAdicionados = LISTA_PRODUTOS.filter((produto) =>
+    idsCarrinho.includes(produto.id)
   );
 
   return (
     <View style={styles.tela}>
       {/* Painel de resumo acadêmico */}
-      <View style={styles.resumoCard}>
-        <View style={styles.resumoItem}>
-          <Text style={styles.resumoValor}>{cursosInscritos.length}</Text>
-          <Text style={styles.resumoLabel}>Cursos Ativos</Text>
-        </View>
-        <View style={styles.divisorVertical} />
-        <View style={styles.resumoItem}>
-          <Text style={styles.resumoValor}>{totalHoras}h</Text>
-          <Text style={styles.resumoLabel}>Carga Horária Total</Text>
-        </View>
-      </View>
+      
 
       <FlatList
-        data={cursosInscritos}
+        data={produtosAdicionados}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.lista}
         ListEmptyComponent={
           <View style={styles.vazioBox}>
-            <Ionicons name="school-outline" size={56} color="#94A3B8" />
-            <Text style={styles.vazioTitulo}>Nenhuma matrícula ativa</Text>
+            <Ionicons name="cart-outline" size={56} color="#94A3B8" />
+            <Text style={styles.vazioTitulo}>Nenhum produto adicionado</Text>
             <Text style={styles.vazioSubtitulo}>
-              Você ainda não se inscreveu em nenhum curso. Explore o catálogo para garantir sua vaga.
+              Você ainda não adicionou nenhum produto ao seu carrinho. Explore a vitrine e adicione produtos.
             </Text>
             <TouchableOpacity
               style={styles.botaoExplorar}
               onPress={() => navigation.navigate('ExplorarTab')}
               activeOpacity={0.85}
             >
-              <Text style={styles.textoBotaoExplorar}>Ir para o Catálogo</Text>
+              <Text style={styles.textoBotaoExplorar}>Ir para a Vitrine</Text>
             </TouchableOpacity>
           </View>
         }
         renderItem={({ item }) => (
-          <View style={styles.cardMatricula}>
+          <View style={styles.cardProduto}>
+            
             <View style={styles.cardTopo}>
-              <Text style={styles.categoria}>{item.categoria}</Text>
-              <Text style={styles.cargaHoraria}>{item.cargaHoraria}</Text>
+              <Image source={{ uri: item.image }} style={{ width: 100, height: 100, borderRadius: 4, marginRight: 8 }} />
+              <Text style={styles.title}>{item.title}</Text>
             </View>
-
-            <Text style={styles.titulo}>{item.titulo}</Text>
-            <Text style={styles.instrutor}>{item.instrutor}</Text>
 
             <View style={styles.acoesLinha}>
               <TouchableOpacity
-                style={styles.botaoEmenta}
+                style={styles.botaoDetalhes}
                 onPress={() =>
                   navigation.navigate('ExplorarTab', {
-                    screen: 'DetalhesCurso',
-                    params: { curso: item },
+                    screen: 'DetalhesProduto',
+                    params: { produto: item },
                   })
                 }
                 activeOpacity={0.8}
               >
-                <Text style={styles.textoBotaoEmenta}>Ver Ementa</Text>
+                <Text style={styles.textoBotaoDetalhes}>Ver Detalhes</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.botaoCancelar}
-                onPress={() => onToggleMatricula(item.id)}
+                onPress={() => onToggleCarrinho(item.id)}
                 activeOpacity={0.8}
               >
                 <Ionicons name="trash-outline" size={16} color="#DC2626" />
-                <Text style={styles.textoBotaoCancelar}>Cancelar</Text>
+                <Text style={styles.textoBotaoCancelar}>Excluir</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
       />
+      <View style={styles.resumoCard}>
+        <View style={styles.resumoItem}>
+          <Text style={styles.resumoValor}>{produtosAdicionados.length}</Text>
+          <Text style={styles.resumoLabel}>Produtos adicionados</Text>
+        </View>
+        <View style={styles.divisorVertical} />
+        <View style={styles.resumoItem}>
+          <Text style={styles.resumoValor}>
+            R$ {produtosAdicionados.reduce((total, produto) => total + produto.price, 0).toFixed(2)}
+          </Text>
+          <Text style={styles.resumoLabel}>Valor Total</Text>
+        </View>
+      </View>
+      <TouchableOpacity
+        style={styles.confirmarCompra}
+        onPress={() => {
+          if (produtosAdicionados.length > 0) {
+            alert('Compra confirmada! Obrigado por comprar conosco.');
+          }
+        }}
+      >
+        <Text style={styles.textoBotaoConfirmar}>Confirmar Compra</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -162,20 +167,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
-  cardMatricula: {
+  cardProduto: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 16,
-    marginBottom: 12,
-    borderLeftWidth: 5,
-    borderLeftColor: '#10B981',
-    borderWidth: 1,
+    marginBottom: 14,
+    borderWidth: 1.5,
     borderColor: '#E2E8F0',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    marginTop: 8,
   },
   cardTopo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 6,
+    alignItems: 'center',
+
   },
   categoria: {
     fontSize: 12,
@@ -183,34 +194,24 @@ const styles = StyleSheet.create({
     color: '#1D4ED8',
     textTransform: 'uppercase',
   },
-  cargaHoraria: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#64748B',
-  },
   titulo: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#0F172A',
     marginBottom: 4,
   },
-  instrutor: {
-    fontSize: 13,
-    color: '#475569',
-    marginBottom: 14,
-  },
   acoesLinha: {
     flexDirection: 'row',
     gap: 10,
   },
-  botaoEmenta: {
+  botaoDetalhes: {
     flex: 1,
     backgroundColor: '#EFF6FF',
     paddingVertical: 9,
     borderRadius: 8,
     alignItems: 'center',
   },
-  textoBotaoEmenta: {
+  textoBotaoDetalhes: {
     color: '#1D4ED8',
     fontWeight: 'bold',
     fontSize: 13,
@@ -229,5 +230,19 @@ const styles = StyleSheet.create({
     color: '#DC2626',
     fontWeight: 'bold',
     fontSize: 13,
+  },
+  confirmarCompra: {
+    backgroundColor: '#10B981',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 16,
+    marginHorizontal: 16,
+    marginBottom: 32,
+  },
+  textoBotaoConfirmar: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

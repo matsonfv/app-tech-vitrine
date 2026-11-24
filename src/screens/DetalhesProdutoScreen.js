@@ -1,58 +1,33 @@
-// Arquivo: src/screens/DetalhesCursoScreen.js
+// Arquivo: src/screens/DetalhesProdutoScreen.js
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function DetalhesCursoScreen({ route, navigation, idsMatriculados, onToggleMatricula }) {
-  const { curso } = route.params;
-  const matriculado = idsMatriculados.includes(curso.id);
-  const vagasRestantes = matriculado ? curso.vagas - 1 : curso.vagas;
+export default function DetalhesProdutoScreen({ route, navigation, idsCarrinho, onToggleCarrinho }) {
+  const { produto } = route.params;
+  const noCarrinho = idsCarrinho.includes(produto.id);
 
   return (
     <ScrollView style={styles.tela} contentContainerStyle={styles.conteudo}>
       <View style={styles.topoTags}>
         <View style={styles.badgeCategoria}>
-          <Text style={styles.badgeCategoriaTexto}>{curso.categoria}</Text>
-        </View>
-        <Text style={styles.nivelTexto}>Nível: {curso.nivel}</Text>
-      </View>
-
-      <Text style={styles.titulo}>{curso.titulo}</Text>
-      <Text style={styles.descricao}>{curso.descricao}</Text>
-
-      <View style={styles.infoBox}>
-        <View style={styles.infoLinha}>
-          <Text style={styles.infoLabel}>Instrutor(a):</Text>
-          <Text style={styles.infoValor}>{curso.instrutor}</Text>
-        </View>
-        <View style={styles.infoLinha}>
-          <Text style={styles.infoLabel}>Carga Horária:</Text>
-          <Text style={styles.infoValor}>{curso.cargaHoraria}</Text>
-        </View>
-        <View style={[styles.infoLinha, { borderBottomWidth: 0 }]}>
-          <Text style={styles.infoLabel}>Vagas Disponíveis:</Text>
-          <Text style={[styles.infoValor, { color: '#059669' }]}>
-            {vagasRestantes} {vagasRestantes === 1 ? 'vaga' : 'vagas'}
-          </Text>
+          <Text style={styles.badgeCategoriaTexto}>{produto.category}</Text>
         </View>
       </View>
+      <Image source={{ uri: produto.image }} style={{ width: '100%', height: '100%', borderRadius: 12, marginBottom: 16 }} />
+      <Text style={styles.titulo}>{produto.title}</Text>
+      <Text style={styles.descricao}>{produto.description}</Text>
 
-      <Text style={styles.secaoTitulo}>O que você vai aprender</Text>
-      <View style={styles.ementaBox}>
-        {curso.ementa.map((topico, index) => (
-          <View key={index} style={styles.topicoLinha}>
-            <Text style={styles.topicoNumero}>{index + 1}.</Text>
-            <Text style={styles.topicoTexto}>{topico}</Text>
-          </View>
-        ))}
-      </View>
+
+      <Text style={styles.preco}>R$ {produto.price}</Text>
+
 
       <TouchableOpacity
-        style={[styles.botaoPrincipal, matriculado ? styles.botaoCancelar : styles.botaoConfirmar]}
-        onPress={() => onToggleMatricula(curso.id)}
+        style={[styles.botaoPrincipal, noCarrinho ? styles.botaoCancelar : styles.botaoConfirmar]}
+        onPress={() => onToggleCarrinho(produto.id)}
         activeOpacity={0.85}
       >
         <Text style={styles.textoBotaoPrincipal}>
-          {matriculado ? '✓ Matriculado (Cancelar Inscrição)' : 'Confirmar Matrícula no Curso'}
+          {noCarrinho ? '✓ Adicionado ao Carrinho (Remover)' : 'Adicionar ao Carrinho'}
         </Text>
       </TouchableOpacity>
 
@@ -61,7 +36,7 @@ export default function DetalhesCursoScreen({ route, navigation, idsMatriculados
         onPress={() => navigation.goBack()}
         activeOpacity={0.8}
       >
-        <Text style={styles.textoBotaoVoltar}>← Voltar para o Catálogo</Text>
+        <Text style={styles.textoBotaoVoltar}>← Voltar para a Vitrine</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -108,6 +83,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#475569',
     lineHeight: 22,
+    marginBottom: 20,
+  },
+  preco: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#0F172A',
     marginBottom: 20,
   },
   infoBox: {

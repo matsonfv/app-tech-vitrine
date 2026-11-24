@@ -5,15 +5,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialDesignIcons } from '@expo/vector-icons';
 
-import CatalogoScreen from './src/screens/CatalogoScreen';
-import DetalhesCursoScreen from './src/screens/DetalhesCursoScreen';
-import MinhasMatriculasScreen from './src/screens/MinhasMatriculasScreen';
+import VitrineScreen from './src/screens/VitrineScreen';
+import DetalhesProdutoScreen from './src/screens/DetalhesProdutoScreen';
+import CarrinhoScreen from './src/screens/CarrinhoScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 // Pilha de navegação exclusiva da primeira aba (Catálogo -> Detalhes)
-function ExplorarStack({ idsMatriculados, onToggleMatricula }) {
+function ExplorarStack({ idsCarrinho, onToggleCarrinho }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -23,28 +23,28 @@ function ExplorarStack({ idsMatriculados, onToggleMatricula }) {
       }}
     >
       <Stack.Screen
-        name="Catalogo"
-        options={{ title: 'Catálogo de Cursos' }}
+        name="Vitrine"
+        options={{ title: 'Vitrine de Produtos' }}
       >
         {(props) => (
-          <CatalogoScreen
+          <VitrineScreen
             {...props}
-            idsMatriculados={idsMatriculados}
+            idsCarrinho={idsCarrinho}
           />
         )}
       </Stack.Screen>
 
       <Stack.Screen
-        name="DetalhesCurso"
+        name="DetalhesProduto"
         options={({ route }) => ({
-          title: route.params?.curso?.categoria || 'Detalhes do Curso',
+          title: route.params?.produto?.categoria || 'Detalhes do Produto',
         })}
       >
         {(props) => (
-          <DetalhesCursoScreen
+          <DetalhesProdutoScreen
             {...props}
-            idsMatriculados={idsMatriculados}
-            onToggleMatricula={onToggleMatricula}
+            idsCarrinho={idsCarrinho}
+            onToggleCarrinho={onToggleCarrinho}
           />
         )}
       </Stack.Screen>
@@ -53,15 +53,15 @@ function ExplorarStack({ idsMatriculados, onToggleMatricula }) {
 }
 
 export default function App() {
-  const [idsMatriculados, setIdsMatriculados] = useState([]);
+  const [idsCarrinho, setIdsCarrinho] = useState([]);
 
-  function alternarMatricula(cursoId) {
-    setIdsMatriculados((listaAtual) => {
-      const jaMatriculado = listaAtual.includes(cursoId);
-      if (jaMatriculado) {
-        return listaAtual.filter((id) => id !== cursoId);
+  function alternarCarrinho(produtoId) {
+    setIdsCarrinho((listaAtual) => {
+      const jaNoCarrinho = listaAtual.includes(produtoId);
+      if (jaNoCarrinho) {
+        return listaAtual.filter((id) => id !== produtoId);
       } else {
-        return [...listaAtual, cursoId];
+        return [...listaAtual, produtoId];
       }
     });
   }
@@ -103,8 +103,8 @@ export default function App() {
         >
           {() => (
             <ExplorarStack
-              idsMatriculados={idsMatriculados}
-              onToggleMatricula={alternarMatricula}
+              idsCarrinho={idsCarrinho}
+              onToggleCarrinho={alternarCarrinho}
             />
           )}
         </Tab.Screen>
@@ -116,14 +116,14 @@ export default function App() {
             headerStyle: { backgroundColor: '#0F172A' },
             headerTintColor: '#F8FAFC',
             headerTitleStyle: { fontWeight: 'bold' },
-            tabBarBadge: idsMatriculados.length > 0 ? idsMatriculados.length : undefined,
+            tabBarBadge: idsCarrinho.length > 0 ? idsCarrinho.length : undefined,
           }}
         >
           {(props) => (
-            <MinhasMatriculasScreen
+            <CarrinhoScreen
               {...props}
-              idsMatriculados={idsMatriculados}
-              onToggleMatricula={alternarMatricula}
+              idsCarrinho={idsCarrinho}
+              onToggleCarrinho={alternarCarrinho}
             />
           )}
         </Tab.Screen>

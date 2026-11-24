@@ -1,37 +1,31 @@
 // Arquivo: src/components/CursoCard.js
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function CursoCard({ curso, matriculado, onAbrirDetalhes }) {
-  const vagasRestantes = matriculado ? curso.vagas - 1 : curso.vagas;
+export default function ProdutoCard({ produto, carrinho, onAbrirDetalhes }) {
 
   return (
     <TouchableOpacity
-      style={[styles.card, matriculado && styles.cardMatriculado]}
+      style={[styles.card, carrinho.includes(produto.id) && styles.cardProdutoAdicionado]}
       onPress={onAbrirDetalhes}
       activeOpacity={0.85}
     >
       <View style={styles.linhaTags}>
-        <View style={styles.tagCategoria}>
-          <Text style={styles.tagCategoriaTexto}>{curso.categoria}</Text>
-        </View>
-        <Text style={styles.cargaHoraria}>{curso.cargaHoraria} • {curso.nivel}</Text>
+        <Image source={{ uri: produto.image }} style={{ width: '100%', aspectRatio: 16 / 9, resizeMode: 'cover' }} />
       </View>
 
-      <Text style={styles.titulo}>{curso.titulo}</Text>
+      <Text style={styles.titulo}>{produto.title}</Text>
+      <View style={styles.tagCategoria}>
+          <Text style={styles.tagCategoriaTexto}>{produto.category}</Text>
+      </View>
       <Text style={styles.descricao} numberOfLines={2}>
-        {curso.descricao}
+        {produto.description}
       </Text>
-
-      <View style={styles.infoRodape}>
-        <Text style={styles.instrutor}>{curso.instrutor}</Text>
-        <Text style={styles.vagas}>
-          {matriculado ? '✓ Matriculado' : `${vagasRestantes} vagas`}
-        </Text>
-      </View>
+      <Text style={styles.rating}>⭐ {produto.rating.rate} ({produto.rating.count})</Text>
+      <Text style={styles.preco}>R$ {produto.price}</Text>
 
       <View style={styles.botaoDetalhes}>
-        <Text style={styles.textoBotaoDetalhes}>Ver Detalhes e Ementa →</Text>
+        <Text style={styles.textoBotaoDetalhes}>Ver Detalhes →</Text>
       </View>
     </TouchableOpacity>
   );
@@ -51,7 +45,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 4,
   },
-  cardMatriculado: {
+  cardProdutoAdicionado: {
     borderColor: '#10B981',
     backgroundColor: '#F0FDF4',
   },
@@ -62,20 +56,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   tagCategoria: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
+    marginBottom: 20,
+    marginTop: 4,
     paddingVertical: 4,
-    borderRadius: 6,
-  },
-  tagCategoriaTexto: {
-    color: '#1D4ED8',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-  cargaHoraria: {
-    fontSize: 12,
-    color: '#64748B',
-    fontWeight: '600',
   },
   titulo: {
     fontSize: 17,
@@ -98,15 +82,10 @@ const styles = StyleSheet.create({
     borderTopColor: '#E2E8F0',
     marginBottom: 12,
   },
-  instrutor: {
-    fontSize: 12,
-    color: '#334155',
-    fontWeight: '600',
-  },
-  vagas: {
-    fontSize: 12,
-    color: '#059669',
+  preco: {
+    fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 12,
   },
   botaoDetalhes: {
     backgroundColor: '#EFF6FF',
@@ -118,5 +97,11 @@ const styles = StyleSheet.create({
     color: '#1D4ED8',
     fontWeight: 'bold',
     fontSize: 13,
+  },
+  rating: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 4,
+    marginBottom: 8,
   },
 });
