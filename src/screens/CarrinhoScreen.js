@@ -11,7 +11,7 @@ export default function CarrinhoScreen({ navigation, idsCarrinho, onToggleCarrin
   const produtosAdicionados = LISTA_PRODUTOS.filter((produto) =>
     idsCarrinho.includes(produto.id)
   );
-  esvaziarCarrinho = () => {
+  const esvaziarCarrinho = () => {
     produtosAdicionados.forEach((produto) => {
       onToggleCarrinho(produto.id);
     });
