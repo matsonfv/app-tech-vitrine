@@ -13,7 +13,11 @@ export default function DetalhesProdutoScreen({ route, navigation, idsCarrinho, 
           <Text style={styles.badgeCategoriaTexto}>{produto.category}</Text>
         </View>
       </View>
-      <Image source={{ uri: produto.image }} style={{ width: '100%', height: '100%', borderRadius: 12, marginBottom: 16 }} />
+      <View>
+        <Image 
+          source={{ uri: produto.image }} 
+          style={{ width: '100%', height: 180, borderRadius: 12, marginBottom: 16 , resizeMode: 'contain'}} />
+      </View>
       <Text style={styles.titulo}>{produto.title}</Text>
       <Text style={styles.descricao}>{produto.description}</Text>
 

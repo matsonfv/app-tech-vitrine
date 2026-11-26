@@ -1,9 +1,11 @@
 // Arquivo: App.js (Prática Guiada - Navegação Combinada: Bottom Tabs + Stack Navigator)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons, MaterialDesignIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 
 import VitrineScreen from './src/screens/VitrineScreen';
 import DetalhesProdutoScreen from './src/screens/DetalhesProdutoScreen';
@@ -11,6 +13,8 @@ import CarrinhoScreen from './src/screens/CarrinhoScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const CHAVE_VITRINE = '@vitrine:produtos';
 
 // Pilha de navegação exclusiva da primeira aba (Catálogo -> Detalhes)
 function ExplorarStack({ idsCarrinho, onToggleCarrinho }) {
@@ -54,6 +58,47 @@ function ExplorarStack({ idsCarrinho, onToggleCarrinho }) {
 
 export default function App() {
   const [idsCarrinho, setIdsCarrinho] = useState([]);
+  const [dadosCarregados, setDadosCarregados] = useState(false);
+
+    // 1. Leitura inicial ao abrir o aplicativo
+  useEffect(() => {
+    async function restaurarVitrine() {
+      try {
+        const jsonSalvo = await AsyncStorage.getItem(CHAVE_VITRINE);
+        if (jsonSalvo !== null) {
+          setIdsCarrinho(JSON.parse(jsonSalvo));
+        }
+      } catch (erro) {
+        console.log('Erro ao ler produtos do AsyncStorage:', erro);
+      } finally {
+        setDadosCarregados(true);
+      }
+    }
+
+    restaurarVitrine();
+  }, []);
+
+  // 2. Gravação automática sempre que a lista de produtos mudar
+  useEffect(() => {
+    if (!dadosCarregados) return;
+
+    async function sincronizarStorage() {
+      try {
+        if (idsCarrinho.length === 0) {
+          await AsyncStorage.removeItem(CHAVE_VITRINE);
+        } else {
+          await AsyncStorage.setItem(
+            CHAVE_VITRINE,
+            JSON.stringify(idsCarrinho)
+          );
+        }
+      } catch (erro) {
+        console.log('Erro ao sincronizar produtos no AsyncStorage:', erro);
+      }
+    }
+
+    sincronizarStorage();
+  }, [idsCarrinho, dadosCarregados]);
 
   function alternarCarrinho(produtoId) {
     setIdsCarrinho((listaAtual) => {
@@ -64,6 +109,19 @@ export default function App() {
         return [...listaAtual, produtoId];
       }
     });
+  }
+
+  function limparCarrinho() {
+    setIdsCarrinho([]);
+  }
+
+  if (!dadosCarregados) {
+    return (
+      <View style={styles.telaCarregando}>
+        <ActivityIndicator size="large" color="#2563EB" />
+        <Text style={styles.textoCarregando}>Restaurando produtos salvos...</Text>
+      </View>
+    );
   }
 
   return (
@@ -124,6 +182,7 @@ export default function App() {
               {...props}
               idsCarrinho={idsCarrinho}
               onToggleCarrinho={alternarCarrinho}
+              onLimparProdutos={limparCarrinho}
             />
           )}
         </Tab.Screen>
@@ -131,3 +190,17 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  telaCarregando: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+  },
+  textoCarregando: {
+    marginTop: 12,
+    fontSize: 15,
+    color: '#475569',
+  },
+});

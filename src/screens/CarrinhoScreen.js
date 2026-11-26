@@ -46,8 +46,8 @@ export default function CarrinhoScreen({ navigation, idsCarrinho, onToggleCarrin
           <View style={styles.cardProduto}>
             
             <View style={styles.cardTopo}>
-              <Image source={{ uri: item.image }} style={{ width: 100, height: 100, borderRadius: 4, marginRight: 8 }} />
-              <Text style={styles.title}>{item.title}</Text>
+              <Image source={{ uri: item.image }} style={{ width: 100, height: 100, borderRadius: 4, marginRight: 8, resizeMode: 'contain' }} />
+              <Text style={styles.titulo}>{item.title}</Text>
             </View>
 
             <View style={styles.acoesLinha}>
@@ -99,6 +99,17 @@ export default function CarrinhoScreen({ navigation, idsCarrinho, onToggleCarrin
         }}
       >
         <Text style={styles.textoBotaoConfirmar}>Confirmar Compra</Text>
+      </TouchableOpacity>
+      <TouchableOpacity 
+        style={styles.esvaziarCarrinho}
+        onPress={() => {
+          if (produtosAdicionados.length > 0) {
+            alert('Carrinho limpo!');
+          }
+          esvaziarCarrinho();
+        }}
+      >
+        <Text style={styles.textoBotaoConfirmar}>Limpar Carrinho</Text>
       </TouchableOpacity>
     </View>
   );
@@ -201,10 +212,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   titulo: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#0F172A',
-    marginBottom: 4,
+    textAlign: 'left',
   },
   acoesLinha: {
     flexDirection: 'row',
@@ -243,6 +254,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 16,
+    marginHorizontal: 16,
+    marginBottom: 32,
+  },
+  esvaziarCarrinho: {
+    backgroundColor: '#F87171',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
     marginHorizontal: 16,
     marginBottom: 32,
   },

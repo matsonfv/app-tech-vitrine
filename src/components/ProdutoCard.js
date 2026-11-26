@@ -11,7 +11,7 @@ export default function ProdutoCard({ produto, carrinho, onAbrirDetalhes }) {
       activeOpacity={0.85}
     >
       <View style={styles.linhaTags}>
-        <Image source={{ uri: produto.image }} style={{ width: '100%', aspectRatio: 16 / 9, resizeMode: 'cover' }} />
+        <Image source={{ uri: produto.image }} style={{ width: '100%', aspectRatio: 16 / 9, resizeMode: 'contain' }} />
       </View>
 
       <Text style={styles.titulo}>{produto.title}</Text>
